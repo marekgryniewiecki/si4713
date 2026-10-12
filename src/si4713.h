@@ -6,14 +6,14 @@
  *  Github:  https://github.com/PE5PVB
  *  
 */
-
+#include "Arduino.h"
 #include <Wire.h>
 uint8_t buf[10];
 uint16_t component;
 uint16_t acomp;
 uint16_t misc;
 int addr;
-uint8_t GPO;
+uint8_t GPOut;
 
 class SI4713
 {
@@ -50,7 +50,7 @@ class SI4713
     void Audio_Deviation(uint16_t dev);
     void ASQ(bool &overmod, int8_t &inlevel);
     void Rev(uint8_t &pn, uint8_t &chiprev);
-    void GPO(bool GPO1, bool GPO2, bool GPO3);
+    void GPOut(bool GPOut1, bool GPOut2, bool GPOut3);
 
   private:
     bool WriteBuffer(uint8_t len);
@@ -61,8 +61,7 @@ class SI4713
 
 bool SI4713::ReadBuffer(uint8_t len)
 {
-
-
+  return true;
 }
 
 bool SI4713::WriteBuffer(uint8_t len)
@@ -77,6 +76,7 @@ bool SI4713::WriteBuffer(uint8_t len)
   delay(54);
   Wire.requestFrom(addr, 1);
   while (bitRead(Wire.read(), 7) != 1) {}
+  return true;
 }
 
 bool SI4713::Set_Property(uint16_t arg1, uint16_t arg2)
@@ -88,6 +88,7 @@ bool SI4713::Set_Property(uint16_t arg1, uint16_t arg2)
   buf[4] = highByte(arg2);
   buf[5] = lowByte(arg2);
   WriteBuffer(6);
+  return true;
 }
 
 void SI4713::Output(uint8_t level, uint8_t cap)
@@ -306,22 +307,22 @@ void SI4713::Audio_Deviation(uint16_t dev)
   Set_Property(0x2101, dev);
 }
 
-void SI4713::GPO(bool GPO1, bool GPO2, bool GPO3)
+void SI4713::GPOut(bool GPOut1, bool GPOut2, bool GPOut3)
 {
   buf[0] = 0x81;
-  if (GPO1 == true)
+  if (GPOut1 == true)
   {
     bitWrite(buf[1], 1, 1);
   } else {
     bitWrite(buf[1], 1, 0);
   }
-  if (GPO2 == true)
+  if (GPOut2 == true)
   {
     bitWrite(buf[1], 2, 1);
   } else {
     bitWrite(buf[1], 2, 0);
   }
-  if (GPO3 == true)
+  if (GPOut3 == true)
   {
     bitWrite(buf[1], 3, 1);
   } else {
@@ -440,7 +441,7 @@ void SI4713::ASQ(bool &overmod, int8_t &inlevel)
     buf[0] = 0x34;
     buf[1] = 0x01;
     WriteBuffer(2);
-    return overmod, inlevel;
+    //return overmod, inlevel;
   }
 }
 
@@ -458,5 +459,5 @@ void SI4713::Rev(uint8_t &pn, uint8_t &chiprev)
     pn = resp[1];
     chiprev = resp[8];
   }
-  return pn, chiprev;
+  //return pn, chiprev;
 }
